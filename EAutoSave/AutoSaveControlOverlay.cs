@@ -1,7 +1,7 @@
 using UnityEditor.Overlays;
 using UnityEditor;
 
-namespace Editor
+namespace EAutoSave
 {
     [Overlay(typeof(SceneView), "", true)]
     public class EAutoSaveControlOverlay : ToolbarOverlay

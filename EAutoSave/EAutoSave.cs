@@ -3,7 +3,7 @@ using UnityEditor.Toolbars;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Editor
+namespace EAutoSave
 {
     [EditorToolbarElement("EToolbar/EAutoSave", typeof(SceneView))]
     public class EAutoSave : EditorToolbarToggle
