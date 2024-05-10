@@ -4,7 +4,7 @@ using UnityEditor;
 [Overlay(typeof(SceneView), "", true)]
 public class EAutoSaveControlOverlay : ToolbarOverlay
 {
-    public EAutoSaveControlOverlay() : base("CustomToolbar/AutoSaveIndicator")
+    public EAutoSaveControlOverlay() : base("EToolbar/EAutoSave")
     {
     }
 }
