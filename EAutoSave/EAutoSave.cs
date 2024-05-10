@@ -3,57 +3,60 @@ using UnityEditor.Toolbars;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-[EditorToolbarElement("EToolbar/EAutoSave", typeof(SceneView))]
-public class EAutoSave : EditorToolbarToggle
+namespace Editor
 {
-    static double nextSaveTime = 0;
-    static Object[] cachedSelectedObjects;
-
-    public EAutoSave()
+    [EditorToolbarElement("EToolbar/EAutoSave", typeof(SceneView))]
+    public class EAutoSave : EditorToolbarToggle
     {
-        icon = EditorGUIUtility.IconContent("SaveActive").image as Texture2D;
-        tooltip = "Toggle AutoSave for selected objects.";
+        static double nextSaveTime = 0;
+        static Object[] cachedSelectedObjects;
 
-        value = EditorPrefs.GetBool("AutoSaveEnabled", false);
-
-        this.RegisterValueChangedCallback(evt =>
+        public EAutoSave()
         {
-            EditorPrefs.SetBool("AutoSaveEnabled", evt.newValue);
-            if (evt.newValue)
+            icon = EditorGUIUtility.IconContent("SaveActive").image as Texture2D;
+            tooltip = "Toggle AutoSave for selected objects.";
+
+            value = EditorPrefs.GetBool("AutoSaveEnabled", false);
+
+            this.RegisterValueChangedCallback(evt =>
             {
-                cachedSelectedObjects = Selection.objects; 
-                nextSaveTime = EditorApplication.timeSinceStartup;
-                Debug.LogWarning("AutoSave enabled");
-            }
-            else
+                EditorPrefs.SetBool("AutoSaveEnabled", evt.newValue);
+                if (evt.newValue)
+                {
+                    cachedSelectedObjects = Selection.objects; 
+                    nextSaveTime = EditorApplication.timeSinceStartup;
+                    Debug.LogWarning("AutoSave enabled");
+                }
+                else
+                {
+                    cachedSelectedObjects = null; 
+                    Debug.LogWarning("AutoSave disabled");
+                }
+            });
+
+            EditorApplication.update += OnEditorUpdate;
+        }
+
+        void OnEditorUpdate()
+        {
+            if (value && EditorApplication.timeSinceStartup >= nextSaveTime)
             {
-                cachedSelectedObjects = null; 
-                Debug.LogWarning("AutoSave disabled");
+                float interval = EditorPrefs.GetFloat("AutoSaveInterval", 300f);
+                nextSaveTime = EditorApplication.timeSinceStartup + interval;
+                SaveCachedAssets();
             }
-        });
-
-        EditorApplication.update += OnEditorUpdate;
-    }
-
-    void OnEditorUpdate()
-    {
-        if (value && EditorApplication.timeSinceStartup >= nextSaveTime)
-        {
-            float interval = EditorPrefs.GetFloat("AutoSaveInterval", 300f);
-            nextSaveTime = EditorApplication.timeSinceStartup + interval;
-            SaveCachedAssets();
         }
-    }
 
-    void SaveCachedAssets()
-    {
-        Debug.Log("Auto-saved following Assets:");
-
-        foreach (Object obj in cachedSelectedObjects)
+        void SaveCachedAssets()
         {
-            EditorUtility.SetDirty(obj);
-            Debug.Log(AssetDatabase.GetAssetPath(obj));
+            Debug.Log("Auto-saved following Assets:");
+
+            foreach (Object obj in cachedSelectedObjects)
+            {
+                EditorUtility.SetDirty(obj);
+                Debug.Log(AssetDatabase.GetAssetPath(obj));
+            }
+            AssetDatabase.SaveAssets();
         }
-        AssetDatabase.SaveAssets();
     }
 }

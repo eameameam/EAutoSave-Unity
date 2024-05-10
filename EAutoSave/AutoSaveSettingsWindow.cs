@@ -1,21 +1,24 @@
 using UnityEditor;
 using UnityEngine;
 
-public class EAutoSaveSettingsWindow : EditorWindow
+namespace Editor
 {
-    [MenuItem("Escripts/AutoSave Settings")]
-    public static void ShowWindow()
+    public class EAutoSaveSettingsWindow : EditorWindow
     {
-        GetWindow(typeof(EAutoSaveSettingsWindow), false, "AutoSave Settings");
-    }
-
-    void OnGUI()
-    {
-        float autoSaveInterval = EditorGUILayout.FloatField("Interval (sec): ", EditorPrefs.GetFloat("AutoSaveInterval", 300f));
-        if (GUILayout.Button("Apply"))
+        [MenuItem("Escripts/AutoSave Settings")]
+        public static void ShowWindow()
         {
-            EditorPrefs.SetFloat("AutoSaveInterval", autoSaveInterval);
-            Debug.Log($"AutoSave interval set to {autoSaveInterval} seconds.");
+            GetWindow(typeof(EAutoSaveSettingsWindow), false, "AutoSave Settings");
+        }
+
+        void OnGUI()
+        {
+            float autoSaveInterval = EditorGUILayout.FloatField("Interval (sec): ", EditorPrefs.GetFloat("AutoSaveInterval", 300f));
+            if (GUILayout.Button("Apply"))
+            {
+                EditorPrefs.SetFloat("AutoSaveInterval", autoSaveInterval);
+                Debug.Log($"AutoSave interval set to {autoSaveInterval} seconds.");
+            }
         }
     }
 }
